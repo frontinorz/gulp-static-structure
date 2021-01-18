@@ -9,8 +9,13 @@
 </head>
 
 <body>
+  @@include('./components/header.html')
   <div class="container">
     <h1>TEXT</h1>
+    @@include('./components/card.html',{
+    "title": "My card",
+    "text": "content text text text"
+    })
   </div>
 </body>
 
