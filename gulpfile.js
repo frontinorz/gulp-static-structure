@@ -14,6 +14,9 @@ const purgecss = require('gulp-purgecss')
 //* js
 const babel = require('gulp-babel');
 
+// image
+const imagemin = require('gulp-imagemin');
+
 const sync = require("browser-sync").create();
 
 function htmlCompiler(cb) {
@@ -68,6 +71,17 @@ function jsCompiler(cb) {
   cb();
 }
 exports.js = jsCompiler
+
+function imageCompress(cb) {
+  src('src/asset/images/*')
+    .pipe(imagemin([
+      imagemin.mozjpeg({ quality: 50, progressive: true }),
+      imagemin.optipng({ optimizationLevel: 5 }),
+    ]))
+    .pipe(dest('dist/asset/images'))
+  cb()
+}
+exports.image = imageCompress
 
 function browserSync(cb) {
   sync.init({

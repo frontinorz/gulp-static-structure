@@ -1,5 +1,5 @@
 "use strict";
-
+// 處理 require 無法使用
 var _interopRequireDefault = require("@babel/runtime-corejs3/helpers/interopRequireDefault");
 
 var _promise = _interopRequireDefault(require("@babel/runtime-corejs3/core-js-stable/promise"));
