@@ -2,6 +2,7 @@ const { src, dest, watch, parallel, series } = require("gulp");
 
 //* html 
 const fileinclude = require('gulp-file-include');
+const i18n = require('gulp-html-i18n')
 
 //* sass
 const sass = require('gulp-sass')
@@ -25,6 +26,22 @@ function htmlCompiler(cb) {
   cb()
 }
 exports.html = htmlCompiler
+
+function i18nHtmlCompiler(cb) {
+  src('src/*.html')
+    .pipe(fileinclude({
+      prefix: '@@',
+      basepath: '@file'
+    }))
+    .pipe(i18n({
+      langDir: 'src/lang',
+      createLangDirs: true,
+      trace: true
+    }))
+    .pipe(dest('dist/i18n'))
+  cb()
+}
+exports.i18n = i18nHtmlCompiler
 
 function sassCompiler(cb) {
   var plugins = [

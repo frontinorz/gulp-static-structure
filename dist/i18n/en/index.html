@@ -9,13 +9,16 @@
 </head>
 
 <body>
-  @@include('./components/header.html')
+<!-- trace:src\index.html -->
+  <header>
+  <h2>This is header</h2>
+</header>
   <div class="container">
-    <h1>${{ index.title }}$</h1>
-    @@include('./components/card.html',{
-    "title": "My card",
-    "text": "content text text text"
-    })
+    <h1>Hello world</h1>
+    <div class="card">
+  <h3>My card</h3>
+  <p>content text text text</p>
+</div>
   </div>
 </body>
 
