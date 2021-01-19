@@ -7,4 +7,4 @@ class Circle { }
 /* --- Promise 物件 --- */
 const promise = Promise.resolve();
 
-console.log('ADJUST6666')
+console.log('12456')
