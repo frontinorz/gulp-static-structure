@@ -1,3 +1,4 @@
+//* gulp core 
 const { src, dest, watch, parallel, series } = require("gulp");
 
 //* html 
@@ -6,10 +7,10 @@ const i18n = require('gulp-html-i18n')
 
 //* sass
 const sass = require('gulp-sass')
+const purgecss = require('gulp-purgecss')
 const postcss = require('gulp-postcss');
 const cssnano = require('cssnano');
 const autoprefixer = require('autoprefixer')
-const purgecss = require('gulp-purgecss')
 
 //* js
 const babel = require('gulp-babel');
@@ -21,9 +22,51 @@ const imagemin = require('gulp-imagemin');
 const del = require('del')
 const sync = require("browser-sync").create();
 
+//*---------- utility methods ---------- 
+function i18nHtmlCompiler(cb) {
+  src('src/*.html')
+    .pipe(fileinclude({
+      prefix: '@@',
+      basepath: '@file'
+    }))
+    .pipe(i18n({
+      langDir: 'src/lang',
+      createLangDirs: true,
+      trace: true
+    }))
+    .pipe(dest('dist/i18n'))
+  cb()
+}
+exports.i18n = i18nHtmlCompiler
 
+function imageCompress(cb) {
+  src('src/asset/images/*')
+    .pipe(imagemin([
+      imagemin.mozjpeg({ quality: 50, progressive: true }),
+      imagemin.optipng({ optimizationLevel: 5 }),
+    ]))
+    .pipe(dest('dist/asset/images'))
+  cb()
+}
+exports.image = imageCompress
 
-// develop
+function jsUCompiler(cb) {
+  src('src/js/utility/*.js')
+    .pipe(babel())
+    .pipe(concat('utility.js'))
+    .pipe(dest('dist/js'))
+  cb();
+}
+exports.jsu = jsUCompiler
+
+function cleanBuild(cb) {
+  del(['dist/**', '!dist'])
+  cb()
+}
+exports.clean = cleanBuild
+// -------------------------------------
+
+//* develop
 function htmlCompiler(cb) {
   src('src/*.html')
     .pipe(fileinclude({
@@ -78,46 +121,6 @@ exports.sync = browserSync
 
 exports.dev = series(htmlCompiler, parallel(sassCompiler, jsCompiler), browserSync)
 
-//*---------- utility ---------- 
-// function used if need
-function i18nHtmlCompiler(cb) {
-  src('src/*.html')
-    .pipe(fileinclude({
-      prefix: '@@',
-      basepath: '@file'
-    }))
-    .pipe(i18n({
-      langDir: 'src/lang',
-      createLangDirs: true,
-      trace: true
-    }))
-    .pipe(dest('dist/i18n'))
-  cb()
-}
-exports.i18n = i18nHtmlCompiler
-
-function imageCompress(cb) {
-  src('src/asset/images/*')
-    .pipe(imagemin([
-      imagemin.mozjpeg({ quality: 50, progressive: true }),
-      imagemin.optipng({ optimizationLevel: 5 }),
-    ]))
-    .pipe(dest('dist/asset/images'))
-  cb()
-}
-exports.image = imageCompress
-
-function jsUCompiler(cb) {
-  src('src/js/utility/*.js')
-    .pipe(babel())
-    .pipe(concat('utility.js'))
-    .pipe(dest('dist/js'))
-  cb();
-}
-exports.jsu = jsUCompiler
-// -------------------------
-
-
 //* build
 function jsBuilder(cb) {
   src('src/js/*.js')
@@ -150,11 +153,5 @@ function cssBuilder(cb) {
   cb();
 }
 exports.cssbuild = cssBuilder
-
-function cleanBuild(cb) {
-  del(['dist'])
-  cb()
-}
-exports.clean = cleanBuild
 
 exports.build = series(cleanBuild, htmlCompiler, parallel(cssBuilder, jsBuilder, imageCompress))
