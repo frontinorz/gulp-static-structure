@@ -13,12 +13,15 @@ const purgecss = require('gulp-purgecss')
 
 //* js
 const babel = require('gulp-babel');
+const terser = require('gulp-terser');
 
-// image
+//* utility 
+const concat = require('gulp-concat');
 const imagemin = require('gulp-imagemin');
-
 const sync = require("browser-sync").create();
 
+
+// develop
 function htmlCompiler(cb) {
   src('src/*.html')
     .pipe(fileinclude({
@@ -26,10 +29,55 @@ function htmlCompiler(cb) {
       basepath: '@file'
     }))
     .pipe(dest('dist'))
+    .pipe(sync.stream())
   cb()
 }
 exports.html = htmlCompiler
 
+function sassCompiler(cb) {
+  let plugins = [
+    autoprefixer(),
+  ];
+
+  src('src/scss/style.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(purgecss({
+      content: ['src/**/*.html']
+    }))
+    .pipe(postcss(plugins))
+    .pipe(dest('dist/style'))
+    .pipe(sync.stream())
+  cb();
+}
+exports.sass = sassCompiler
+
+function jsCompiler(cb) {
+  src('src/js/*.js')
+    .pipe(babel())
+    .pipe(concat('script.js'))
+    .pipe(dest('dist/js'))
+    .pipe(sync.stream())
+  cb();
+}
+exports.js = jsCompiler
+
+function browserSync(cb) {
+  sync.init({
+    server: {
+      baseDir: "./dist"
+    }
+  })
+
+  watch('src/**/*.html', htmlCompiler)
+  watch('src/scss/*.scss', sassCompiler)
+  watch('src/js/*.js', jsCompiler)
+}
+exports.sync = browserSync
+
+exports.dev = series(htmlCompiler, parallel(sassCompiler, jsCompiler), browserSync)
+
+//*---------- utility ---------- 
+// function used if need
 function i18nHtmlCompiler(cb) {
   src('src/*.html')
     .pipe(fileinclude({
@@ -46,32 +94,6 @@ function i18nHtmlCompiler(cb) {
 }
 exports.i18n = i18nHtmlCompiler
 
-function sassCompiler(cb) {
-  var plugins = [
-    autoprefixer(),
-    cssnano()
-  ];
-
-  src('src/scss/*.scss')
-    .pipe(sass().on('error', sass.logError))
-    .pipe(purgecss({
-      content: ['src/**/*.html']
-    }))
-    .pipe(postcss(plugins))
-    .pipe(dest('dist/style'))
-    .pipe(sync.stream())
-  cb();
-}
-exports.sass = sassCompiler
-
-function jsCompiler(cb) {
-  src('src/js/*.js')
-    .pipe(babel())
-    .pipe(dest('dist/js'))
-  cb();
-}
-exports.js = jsCompiler
-
 function imageCompress(cb) {
   src('src/asset/images/*')
     .pipe(imagemin([
@@ -83,17 +105,49 @@ function imageCompress(cb) {
 }
 exports.image = imageCompress
 
-function browserSync(cb) {
-  sync.init({
-    server: {
-      baseDir: "./dist"
-    }
-  })
-
-  watch('src/*.html', htmlCompiler)
-  watch('src/scss/*.scss', sassCompiler)
-  watch('./dist/*.html').on('change', sync.reload)
+function jsUCompiler(cb) {
+  src('src/js/utility/*.js')
+    .pipe(babel())
+    .pipe(concat('utility.js'))
+    .pipe(dest('dist/js'))
+  cb();
 }
-exports.sync = browserSync
+exports.jsu = jsUCompiler
+// -------------------------
 
-exports.dev = series(parallel(htmlCompiler, sassCompiler), browserSync)
+
+//* build
+function jsBuilder(cb) {
+  src('src/js/*.js')
+    .pipe(babel())
+    .pipe(concat('script.js'))
+    .pipe(terser())
+    .pipe(dest('dist/js'))
+  src('src/js/utility/*.js')
+    .pipe(babel())
+    .pipe(concat('utility.js'))
+    .pipe(terser())
+    .pipe(dest('dist/js'))
+  cb();
+}
+exports.jsbuild = jsBuilder
+
+function cssBuilder(cb) {
+  let plugins = [
+    autoprefixer(),
+    cssnano()
+  ];
+
+  src('src/scss/style.scss')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(purgecss({
+      content: ['src/**/*.html']
+    }))
+    .pipe(postcss(plugins))
+    .pipe(dest('dist/style'))
+  cb();
+}
+
+exports.cssbuild = cssBuilder
+
+exports.build = series(htmlCompiler, cssBuilder, jsBuilder, imageCompress)
