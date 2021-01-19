@@ -37,5 +37,7 @@
     "gulp-terser": "^2.0.1",
     "postcss": "^8.2.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "tailwindcss": "^2.0.2"
+  }
 }

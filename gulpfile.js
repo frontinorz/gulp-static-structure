@@ -22,6 +22,10 @@ const imagemin = require('gulp-imagemin');
 const del = require('del')
 const sync = require("browser-sync").create();
 
+//* tailwind css 
+const tailwindcss = require('tailwindcss');
+const tailwindConfig = require('./tailwind.config')
+
 //*---------- utility methods ---------- 
 function i18nHtmlCompiler(cb) {
   src('src/*.html')
@@ -81,15 +85,14 @@ exports.html = htmlCompiler
 
 function sassCompiler(cb) {
   let plugins = [
+    tailwindcss(tailwindConfig),
     autoprefixer(),
   ];
 
-  src('src/scss/style.scss')
+  src('src/scss/**/*.scss')
     .pipe(sass().on('error', sass.logError))
-    .pipe(purgecss({
-      content: ['src/**/*.html']
-    }))
     .pipe(postcss(plugins))
+    .pipe(concat('style.css'))
     .pipe(dest('dist/style'))
     .pipe(sync.stream())
   cb();
@@ -139,16 +142,18 @@ exports.jsbuild = jsBuilder
 
 function cssBuilder(cb) {
   let plugins = [
+    tailwindcss(tailwindConfig),
     autoprefixer(),
     cssnano()
   ];
 
-  src('src/scss/style.scss')
+  src('src/scss/**/*.scss')
     .pipe(sass().on('error', sass.logError))
+    .pipe(postcss(plugins))
     .pipe(purgecss({
       content: ['src/**/*.html']
     }))
-    .pipe(postcss(plugins))
+    .pipe(concat('style.css'))
     .pipe(dest('dist/style'))
   cb();
 }

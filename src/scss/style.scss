@@ -1,5 +1,3 @@
-@import "./header.scss";
-
 // scss command
 body{
   margin: 0;
@@ -19,6 +17,10 @@ h1{
 
 h2{
   color: blue;
+}
+
+input{
+  color: red;
 }
 
 p{
