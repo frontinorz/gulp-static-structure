@@ -10,14 +10,36 @@
 
 <body>
   @@include('./components/header.html')
-  <div class="container">
-    <h1>Hello5555666</h1>
+  <div class="container d-flex flex-column p-5">
+    <h1 class="text-primary">Hello5555666</h1>
     @@include('./components/card.html',{
     "title": "My card",
     "text": "content text text text"
     })
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+        aria-haspopup="true" aria-expanded="false">
+        Dropdown button
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" href="#">Action</a>
+        <a class="dropdown-item" href="#">Another action</a>
+        <a class="dropdown-item" href="#">Something else here</a>
+      </div>
+    </div>
+    <button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="top"
+      data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+      Popover on top
+    </button>
   </div>
+
+  <script src="./js/vender.js"></script>
   <script src="./js/script.js"></script>
 </body>
+<script>
+  $(function () {
+    $('[data-toggle="popover"]').popover()
+  })
+</script>
 
 </html>

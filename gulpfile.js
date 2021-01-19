@@ -84,12 +84,12 @@ function sassCompiler(cb) {
     autoprefixer(),
   ];
 
-  src('src/scss/style.scss')
-    .pipe(sass().on('error', sass.logError))
-    .pipe(purgecss({
-      content: ['src/**/*.html']
-    }))
+  src('src/scss/**/*.scss')
+    .pipe(sass({
+      includePaths: ['node_modules/bootstrap/scss/'],
+    }).on('error', sass.logError))
     .pipe(postcss(plugins))
+    .pipe(concat('style.css'))
     .pipe(dest('dist/style'))
     .pipe(sync.stream())
   cb();
@@ -128,14 +128,20 @@ function jsBuilder(cb) {
     .pipe(concat('script.js'))
     .pipe(terser())
     .pipe(dest('dist/js'))
-  src('src/js/utility/*.js')
-    .pipe(babel())
-    .pipe(concat('utility.js'))
-    .pipe(terser())
-    .pipe(dest('dist/js'))
   cb();
 }
 exports.jsbuild = jsBuilder
+
+function jsBootstrap(cb) {
+  src([
+    'node_modules/jquery/dist/jquery.slim.min.js',
+    'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js'
+  ])
+    .pipe(concat('vender.js'))
+    .pipe(dest('dist/js'))
+  cb();
+}
+exports.jsBbuild = jsBootstrap
 
 function cssBuilder(cb) {
   let plugins = [
@@ -143,15 +149,18 @@ function cssBuilder(cb) {
     cssnano()
   ];
 
-  src('src/scss/style.scss')
-    .pipe(sass().on('error', sass.logError))
+  src('src/scss/**/*.scss')
+    .pipe(sass({
+      includePaths: ['node_modules/bootstrap/scss/'],
+    }).on('error', sass.logError))
+    .pipe(postcss(plugins))
     .pipe(purgecss({
       content: ['src/**/*.html']
     }))
-    .pipe(postcss(plugins))
+    .pipe(concat('style.css'))
     .pipe(dest('dist/style'))
   cb();
 }
 exports.cssbuild = cssBuilder
 
-exports.build = series(cleanBuild, htmlCompiler, parallel(cssBuilder, jsBuilder, imageCompress))
+exports.build = series(cleanBuild, htmlCompiler, parallel(cssBuilder, jsBootstrap, jsBuilder, imageCompress))
