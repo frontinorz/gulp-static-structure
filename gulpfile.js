@@ -18,7 +18,9 @@ const terser = require('gulp-terser');
 //* utility 
 const concat = require('gulp-concat');
 const imagemin = require('gulp-imagemin');
+const del = require('del')
 const sync = require("browser-sync").create();
+
 
 
 // develop
@@ -147,7 +149,12 @@ function cssBuilder(cb) {
     .pipe(dest('dist/style'))
   cb();
 }
-
 exports.cssbuild = cssBuilder
 
-exports.build = series(htmlCompiler, cssBuilder, jsBuilder, imageCompress)
+function cleanBuild(cb) {
+  del(['dist'])
+  cb()
+}
+exports.clean = cleanBuild
+
+exports.build = series(cleanBuild, htmlCompiler, parallel(cssBuilder, jsBuilder, imageCompress))
