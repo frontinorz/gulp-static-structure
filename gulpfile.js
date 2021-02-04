@@ -84,10 +84,8 @@ function sassCompiler(cb) {
     autoprefixer(),
   ];
 
-  src('src/scss/**/*.scss')
-    .pipe(sass({
-      includePaths: ['node_modules/bootstrap/scss/'],
-    }).on('error', sass.logError))
+  src('src/scss/*.scss')
+    .pipe(sass().on('error', sass.logError))
     .pipe(postcss(plugins))
     .pipe(concat('style.css'))
     .pipe(dest('dist/style'))
