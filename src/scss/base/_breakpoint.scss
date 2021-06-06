@@ -1,0 +1,79 @@
+$phone: 320px;
+$small: 576px;
+$medium: 768px;
+$large: 992px;
+$extra-large: 1200px;
+$desktop-lg: 1440px;
+$desktop-max: 1920px;
+
+$screen-breakpoints:(
+  s: 0,
+  sm: $sm,
+  m: $m,
+  l: $large,
+  xl: $extra-large,
+  dl: $desktop-lg,
+  dm: $desktop-max
+) !default;
+
+
+@function breakpoint-min($name, $breakpoints: $screen-breakpoints) {
+  $min: map-get($breakpoints, $name);
+  @return if($min !=0, $min + 1, null);
+}
+
+@function breakpoint-max($name, $breakpoints: $screen-breakpoints) {
+  $max: map-get($breakpoints, $name);
+  @return if($max !=0, $max, null);
+}
+
+@mixin breakpoint-up($name, $breakpoints: $screen-breakpoints) {
+  $min: breakpoint-min($name, $breakpoints);
+
+  @if $min {
+    @media (min-width: $min) {
+      @content;
+    }
+  }
+
+  @else {
+    @content;
+  }
+}
+
+@mixin breakpoint-down($name, $breakpoints: $screen-breakpoints) {
+  $max: breakpoint-max($name, $breakpoints);
+
+  @if $max {
+    @media (max-width: $max) {
+      @content;
+    }
+  }
+
+  @else {
+    @content;
+  }
+}
+
+@mixin breakpoint-between($lower, $upper, $breakpoints: $screen-breakpoints) {
+  $min: breakpoint-min($lower, $breakpoints);
+  $max: breakpoint-max($upper, $breakpoints);
+
+  @if $min !=null and $max !=null {
+    @media (min-width: $min) and (max-width: $max) {
+      @content;
+    }
+  }
+
+  @else if $max==null {
+    @include media-breakpoint-up($lower, $breakpoints) {
+      @content;
+    }
+  }
+
+  @else if $min==null {
+    @include breakpoint-down($upper, $breakpoints) {
+      @content;
+    }
+  }
+}
