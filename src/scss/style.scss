@@ -1,1 +1,27 @@
 // main style
+@import './base/breakpoint';
+@import './base/variables';
+@import './base/utils';
+
+body{
+  font-family: Microsoft JhengHei, sans-serif;
+  @include breakpoint-down(sm){
+  }
+}
+
+img{
+  max-width: 100%;
+}
+
+// form item default style reset
+button, input, select{
+  background: none;
+  border: none;
+  outline: none;
+}
+
+a{
+  &:hover{
+    text-decoration: none;
+  }
+}

@@ -1,0 +1,140 @@
+// placeholder color
+@mixin placeholder-color($color) {
+  ::-webkit-input-placeholder, ::-ms-input-placeholder, ::placeholder{
+    color: $color;
+  }
+}
+
+// select custom arrow
+@mixin select-arrow($color) {
+  select{
+    background-image:
+      linear-gradient(45deg, transparent 50%, $color 60%),
+      linear-gradient(135deg, $color 40%, transparent 50%) !important;
+    background-position:
+      calc(100% - 40px) 15px, calc(100% - 30px) 15px, 100% 0;
+    background-size:
+      10px 10px,
+      10px 10px;
+    background-repeat: no-repeat;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+}
+
+// data custom calender icon
+@mixin date-calender-icon($imgUrl, $size) {
+  input[type=date]{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    color: rgba(0, 0, 0, 0);
+    opacity: 1;
+    display: block;
+    background: url($imgUrl) no-repeat;
+    background-size: contain;
+    width: $size;
+    height: $size;
+  }
+}
+
+// hide input number arrow
+@mixin number-hide-arrow {
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+}
+
+// checkbox to switch
+%switch{
+  position: relative;
+  display: inline-block;
+  width: 55px;
+  height: 25px;
+  &:checked{
+    + .slider {
+      opacity: 1;
+    }
+    + .slider:before {
+      transform: translateX(26px);
+    }
+  }
+  input{
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #aaa;
+    transition: .4s;
+    &.round {
+      border-radius: 34px;
+      &:before{
+        border-radius: 50%;
+      }
+    }
+    &:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 3px;
+      background-color: #fff;
+      transition: .4s;
+    }
+  }
+}
+
+// input with icon prefix
+%input-with-icon{
+  position: relative;
+  padding-left: 60px;
+  >img{
+    position: absolute;
+    left: 20px;
+    top: 10px;
+    width: 20px;
+  }
+}
+
+
+%shadow{
+  width: 100%;
+  position: absolute;
+  left: 0;
+  height: 100px;
+  @include breakpoint-down(s){
+    height: 50px;
+  }
+  &-bottom{
+    bottom: 0;
+    background: rgb(0,0,0);
+    background: linear-gradient(0deg, rgba(0,0,0,.8) 0%, rgba(255,255,255,0) 100%);
+    @include breakpoint-down(s){
+      background: linear-gradient(0deg, rgba(0,0,0,.5) 0%, rgba(255,255,255,0) 100%);
+    }
+  }
+  &-top{
+    top: 0;
+    background: rgb(0,0,0);
+    background: linear-gradient(180deg, rgba(0,0,0,.8) 0%, rgba(255,255,255,0) 100%);
+    @include breakpoint-down(s){
+      background: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(255,255,255,0) 100%);
+    }
+  }
+}

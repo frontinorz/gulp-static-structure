@@ -1,0 +1,27 @@
+<!-- 有加減號的 input number -->
+<div>
+  <label class="d-block" for="count">count:</label>
+  <div class="text-center">
+    <div class="d-inline-block minus">-</div>
+    <input class="text-center" type="number" name="" id="count" value="1">
+    <div class="d-inline-block plus">+</div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    $('.minus').click(function () {
+      var $input = $(this).parent().find('input');
+      var count = parseInt($input.val()) - 1;
+      count = count < 1 ? 1 : count;
+      $input.val(count);
+      $input.change();
+      return false;
+    });
+    $('.plus').click(function () {
+      var $input = $(this).parent().find('input');
+      $input.val(parseInt($input.val()) + 1);
+      $input.change();
+      return false;
+    });
+  });
+</script>

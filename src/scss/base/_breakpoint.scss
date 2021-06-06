@@ -8,8 +8,8 @@ $desktop-max: 1920px;
 
 $screen-breakpoints:(
   s: 0,
-  sm: $sm,
-  m: $m,
+  sm: $small,
+  m: $medium,
   l: $large,
   xl: $extra-large,
   dl: $desktop-lg,
@@ -66,7 +66,7 @@ $screen-breakpoints:(
   }
 
   @else if $max==null {
-    @include media-breakpoint-up($lower, $breakpoints) {
+    @include breakpoint-up($lower, $breakpoints) {
       @content;
     }
   }

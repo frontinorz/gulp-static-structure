@@ -1,0 +1,170 @@
+@import './base/breakpoint';
+
+// body fix
+body{
+  padding-top: 60px;
+  @include breakpoint-down(l){
+    padding-top: 42px;
+  }
+}
+
+// header style
+.header{
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  background-color: #498b33;
+    [aria-expanded="false"] .menu__icon--open {
+    display: inline;
+  }
+  [aria-expanded="false"] .menu__icon--close {
+    display: none;
+  }
+  [aria-expanded="true"] .menu__icon--open {
+    display: none;
+  }
+  [aria-expanded="true"] .menu__icon--close {
+    display: inline;
+  }
+}
+.navbar{
+  padding-top: 0;
+  padding-bottom: 0;
+  @include breakpoint-down(l){
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+.navbar-brand{
+  padding-top: 0;
+  padding-bottom: 0;
+  @include breakpoint-down(l){
+    padding-left: 15px;
+  }
+  @include breakpoint-down(l){
+    padding-top: 5px;
+    padding-bottom: 5px;
+    img{
+      width: 150px;
+    }
+  }
+}
+
+.navbar-nav{
+  .nav-item{
+    position: relative;
+    &-drop{
+      &:hover{
+        background-color: #2c621a;
+      }
+      @include breakpoint-up(l){
+        &:hover{
+          .nav-drop{
+            height: auto;
+          }
+        }
+      }
+      @include breakpoint-down(l){
+        &:after{
+          content: '▼';
+          position: absolute;
+          right: 15px;
+          top: 8px;
+          color: #fff;
+        }
+        &.active{
+          background-color: #2c621a;
+          &:after{
+            transform: scaleY(-1);
+          }
+          .nav-drop{
+            height: auto;
+          }
+        }
+      }
+    }
+  }
+  .nav-link{
+    padding: 20px 15px !important;
+    font-size: 16px;
+    color: #fff;
+    @include breakpoint-down(l){
+      font-size: 16px !important;
+      padding: 10px 15px !important;
+    }
+  }
+  .nav-drop{
+    position: absolute;
+    top: 100%;
+    height: 0;
+    overflow: hidden;
+    a{
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      color: #fff;
+      padding: 5px 15px;
+      background-color: #68b94d;
+      &:hover{
+        background-color: #437b31;
+      }
+    }
+
+    @include breakpoint-down(l){
+      position: relative;
+      top: auto;
+      a{
+        text-align: left;
+      }
+    }
+  }
+}
+
+.navbar-collapse{
+  .navbar-nav{
+    @include breakpoint-down(l){
+      overflow: auto;
+      height: calc(100vh - 42px);
+    }
+  }
+}
+.navbar-toggler{
+  img{
+    width: 25px;
+  }
+
+}
+@include breakpoint-down(xl){
+  .navbar-nav{
+    .nav-drop{
+      a{
+        padding: 5px 5px;
+      }
+    }
+    .nav-link{
+      font-size: 15px;
+      padding: 20px 5px !important;
+    }
+  }
+}
+@include breakpoint-down(xl){
+    .navbar-nav{
+    .nav-link{
+      font-size: 14px;
+    }
+  }
+}
+@include breakpoint-down(l){
+  .navbar-nav{
+    .nav-link{
+      padding: 10px 15px !important;
+    }
+    .nav-drop{
+      a{
+        padding: 5px 15px;
+      }
+    }
+  }
+}

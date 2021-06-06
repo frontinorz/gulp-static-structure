@@ -162,7 +162,7 @@ function bootstrapBuilder(cb) {
     cssnano()
   ];
 
-  src('src/scss/vendor/*.scss')
+  src('src/scss/bootstrap/*.scss')
     .pipe(sass({
       includePaths: ['node_modules/bootstrap/scss/'],
     }).on('error', sass.logError))
