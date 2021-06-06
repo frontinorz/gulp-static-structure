@@ -1,7 +1,7 @@
-//* gulp core 
+//* gulp core
 const { src, dest, watch, parallel, series } = require("gulp");
 
-//* html 
+//* html
 const fileinclude = require('gulp-file-include');
 const i18n = require('gulp-html-i18n')
 
@@ -16,13 +16,13 @@ const autoprefixer = require('autoprefixer')
 const babel = require('gulp-babel');
 const terser = require('gulp-terser');
 
-//* utility 
+//* utility
 const concat = require('gulp-concat');
 const imagemin = require('gulp-imagemin');
 const del = require('del')
 const sync = require("browser-sync").create();
 
-//*---------- utility methods ---------- 
+//*---------- utility methods ----------
 function i18nHtmlCompiler(cb) {
   src('src/*.html')
     .pipe(fileinclude({
@@ -40,7 +40,7 @@ function i18nHtmlCompiler(cb) {
 exports.i18n = i18nHtmlCompiler
 
 function imageCompress(cb) {
-  src('src/asset/images/*')
+  src('src/asset/images/**/*')
     .pipe(imagemin([
       imagemin.mozjpeg({ quality: 50, progressive: true }),
       imagemin.optipng({ optimizationLevel: 5 }),
@@ -84,12 +84,10 @@ function sassCompiler(cb) {
     autoprefixer(),
   ];
 
-  src('src/scss/style.scss')
+  src('src/scss/*.scss')
     .pipe(sass().on('error', sass.logError))
-    .pipe(purgecss({
-      content: ['src/**/*.html']
-    }))
     .pipe(postcss(plugins))
+    .pipe(concat('style.css'))
     .pipe(dest('dist/style'))
     .pipe(sync.stream())
   cb();
@@ -128,14 +126,20 @@ function jsBuilder(cb) {
     .pipe(concat('script.js'))
     .pipe(terser())
     .pipe(dest('dist/js'))
-  src('src/js/utility/*.js')
-    .pipe(babel())
-    .pipe(concat('utility.js'))
-    .pipe(terser())
-    .pipe(dest('dist/js'))
   cb();
 }
 exports.jsbuild = jsBuilder
+
+function jsBootstrap(cb) {
+  src([
+    'node_modules/jquery/dist/jquery.slim.min.js',
+    'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js'
+  ])
+    .pipe(concat('vendor.js'))
+    .pipe(dest('dist/js'))
+  cb();
+}
+exports.jsBbuild = jsBootstrap
 
 function cssBuilder(cb) {
   let plugins = [
@@ -143,15 +147,29 @@ function cssBuilder(cb) {
     cssnano()
   ];
 
-  src('src/scss/style.scss')
+  src('src/scss/*.scss')
     .pipe(sass().on('error', sass.logError))
-    .pipe(purgecss({
-      content: ['src/**/*.html']
-    }))
     .pipe(postcss(plugins))
+    .pipe(concat('style.css'))
     .pipe(dest('dist/style'))
   cb();
 }
 exports.cssbuild = cssBuilder
 
-exports.build = series(cleanBuild, htmlCompiler, parallel(cssBuilder, jsBuilder, imageCompress))
+function bootstrapBuilder(cb) {
+  let plugins = [
+    autoprefixer(),
+    cssnano()
+  ];
+
+  src('src/scss/vendor/*.scss')
+    .pipe(sass({
+      includePaths: ['node_modules/bootstrap/scss/'],
+    }).on('error', sass.logError))
+    .pipe(postcss(plugins))
+    .pipe(dest('dist/style'))
+  cb();
+}
+exports.bootstrap = bootstrapBuilder
+
+exports.build = series(cleanBuild, htmlCompiler, parallel(bootstrapBuilder, cssBuilder, jsBootstrap, jsBuilder, imageCompress))
